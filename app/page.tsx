@@ -1,10 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { calculateMiluy } from '../src/utils/miluy'
+import { calculateMiluy, MiluyType } from '../src/utils/miluy'
 
 export default function Home() {
   const [input, setInput] = useState('');
-  const { breakdown, totalValue, totalSuffixValue, totalBasicValue } = calculateMiluy(input);
+  const [miluyType, setMiluyType] = useState<MiluyType>('alephin');
+  const { breakdown, totalValue, totalSuffixValue, totalBasicValue } = calculateMiluy(input, miluyType);
 
   return (
     <div className='min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4 font-sans' dir='rtl'>
@@ -19,6 +20,19 @@ export default function Home() {
           className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg'
           placeholder='למשל: שלום'
         />
+
+        <div className='mt-4 pt-4 border-t border-gray-100'>
+          <label className='block mb-2 text-gray-700 font-semibold'>סוג מילוי (עבור האותיות ה' ו-ו'):</label>
+          <select 
+            value={miluyType}
+            onChange={(e) => setMiluyType(e.target.value as MiluyType)}
+            className='w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg bg-white'
+          >
+            <option value="yodin">מילוי יודין (הי, ויו)</option>
+            <option value="alephin">מילוי אלפין (הא, ואו)</option>
+            <option value="hehin">מילוי ההין (הה, וו)</option>
+          </select>
+        </div>
       </div>
 
       {input && (

@@ -40,14 +40,37 @@ function getStringValue(str: string): number {
   return str.split('').reduce((acc, char) => acc + (gematriaValues[char] || 0), 0);
 }
 
-export function calculateMiluy(word: string) {
+export type MiluyType = 'yodin' | 'alephin' | 'hehin';
+
+export function calculateMiluy(word: string, miluyType: MiluyType = 'alephin') {
   const letters = word.replace(/[^א-ת]/g, '').split('');
   let totalValue = 0;
   let totalSuffixValue = 0;
   let totalBasicValue = 0;
   
+  const getOverride = (char: string): string | null => {
+    if (char === 'ה') {
+      if (miluyType === 'yodin') return 'הי';
+      if (miluyType === 'alephin') return 'הא';
+      if (miluyType === 'hehin') return 'הה';
+    }
+    if (char === 'ו') {
+      if (miluyType === 'yodin') return 'ויו';
+      if (miluyType === 'alephin') return 'ואו';
+      if (miluyType === 'hehin') return 'וו';
+    }
+    return null;
+  };
+
   const breakdown = letters.map((char) => {
-    const data = miluyMap[char] || { full: char, value: 0 };
+    let data = miluyMap[char] || { full: char, value: 0 };
+    
+    // Override logic
+    const overrideFull = getOverride(char);
+    if (overrideFull) {
+        data = { full: overrideFull, value: getStringValue(overrideFull) };
+    }
+
     const suffix = data.full.substring(1);
     const suffixValue = getStringValue(suffix);
     const basicValue = gematriaValues[char] || 0;
